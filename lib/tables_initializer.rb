@@ -1,6 +1,6 @@
 require 'pg'
 
-db = PG.connect(host: 'localhost', dbname: 'task_manager_db')
+db = PG.connect(host: 'localhost', dbname: 'RPS_db')
 
 command = <<-SQL
 CREATE TABLE users(

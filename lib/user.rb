@@ -2,12 +2,22 @@ require 'digest'
 
 module RPS
   class User
-    attr_reader :id, :username
+    attr_reader :id, :user_name
 
-    def initialize(id, username, password_digest=nil)
+    def initialize(id=nil, user_name, password_digest=nil)
       @id = id
-      @username = username
+      @user_name = user_name
       @password_digest = password_digest
+    end
+
+    def create!
+      id_from_db = RPS.orm.create_user(@user_name)
+      @id = id_from_db
+      self
+    end
+
+    def save!
+      id_from_db = RPS.orm.update_user(@user_name, @id)
     end
 
     def update_password(password)
