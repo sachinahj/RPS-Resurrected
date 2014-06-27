@@ -12,7 +12,7 @@ CREATE TABLE users(
    PRIMARY KEY( id )
 );
 
-CREATE TABLE matchs(
+CREATE TABLE matches(
    id SERIAL,
    user1_id integer,
    user2_id integer,
@@ -21,8 +21,8 @@ CREATE TABLE matchs(
    user1_move text,
    user2_move text,
    game_history_hash text,
-   last_game_winner integer,
-   match_winner integer,
+   last_game_winner_id integer,
+   match_winner_id integer,
    PRIMARY KEY( id )
 );
 SQL

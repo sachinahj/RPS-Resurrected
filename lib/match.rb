@@ -12,14 +12,14 @@ module RPS
       :match_id
     def initialize( 
       user1, 
-      user2=nil,
+      user2=0,
       user1_wins=0, 
       user2_wins=0,
       user1_move=nil,
       user2_move=nil,
       game_history_hash="",
-      game_winner=nil,
-      match_winner=nil,
+      game_winner_id=0,
+      match_winner_id=0,
       id=nil
     )
       @user1 = user1
@@ -29,8 +29,8 @@ module RPS
       @user1_move = user1_move
       @user2_move = user2_move
       @game_history_hash = game_history_hash
-      @last_game_winner = game_winner
-      @match_winner = match_winner
+      @last_game_winner_id = game_winner_id
+      @match_winner_id = match_winner_id
       @match_id = id
     end
     def create!
@@ -38,10 +38,10 @@ module RPS
       @match_id = id_from_db
     end
     def save!
-      last_game_winner_id = nil
-      last_game_winner_id = @last_game_winner.id if @last_game_winner.id != nil
-      match_winner_id = nil
-      match_winner_id = @match_winner.id if @match_winner.id != nil
+      user1_id = 0
+      user1_id = @user1.id if @user1 != nil
+      user2_id = 0
+      user2_id = @user2.id if @user2 != nil
 
       RPS.orm.update_match(
         @user1.id,
@@ -51,18 +51,20 @@ module RPS
         @user1_move,
         @user2_move,
         @game_history_hash,
-        last_game_winner,
-        match_winner_id,
+        @last_game_winner_id,
+        @match_winner_id,
         @match_id,
       )
+      self
     end
-    def find_random_opponent
+    def assign_random_opponent
       if @user2.nil?
-        random_user = RPS.orm._get_random_user()
-        if random_user[:id] != @user1.id
-          @user2 = RPS::User.new()
-        else
-          find_random_opponent
+        all_user_ids = RPS.orm.get_all_user_ids
+        while @user2.nil?
+          random_index = rand(all_user_ids.length)
+          if all_user_ids[random_index] != @user1.id
+            @user2 = RPS::User.get_user_object_by_user_id(all_user_ids[random_index])
+          end
         end
       end
     end
@@ -117,6 +119,27 @@ module RPS
       w = 1 if @last_game_winner == @user1
       w = 2 if @last_game_winner == @user2
       @game_history_hash << "1#{@user1_move.slice(0)}*2#{@user2_move.slice(0)}*w#{w}:"
+    end
+
+    def self.get_match_object_by_match_id(match_id)
+      params = RPS.orm.get_match_info_by_match_id(match_id)
+      user1 = nil
+      user2 = nil
+      user1 = RPS::User.get_user_object_by_user_id(params.first["user1_id"].to_i) if params.first["user1_id"].to_i != 0
+      user2 = RPS::User.get_user_object_by_user_id(params.first["user2_id"].to_i) if params.first["user2_id"].to_i != 0
+      match = RPS::Match.new(
+        user1,
+        user2,
+        params.first["user1_game_wins"].to_i,
+        params.first["user2_game_wins"].to_i,
+        params.first["user1_move"],
+        params.first["user2_move"],
+        params.first["game_history_hash"],
+        params.first["last_game_winner_id"].to_i,
+        params.first["match_winner_id"].to_i,
+        params.first["id"].to_i
+      )
+      return match
     end
   end
 end

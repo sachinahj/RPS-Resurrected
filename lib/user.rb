@@ -2,8 +2,8 @@ require 'digest'
 
 module RPS
   class User
-    attr_accessor :id, 
-      :user_name, 
+    attr_accessor :user_name, 
+      :id,
       :password_digest,
       :overall_wins,
       :overall_losses
@@ -33,6 +33,7 @@ module RPS
         @overall_wins,
         @overall_losses
       )
+      self
     end
     def update_password(password)
       @password_digest =  Digest::SHA1.hexdigest(password)
@@ -44,11 +45,11 @@ module RPS
     def self.get_user_object_by_user_name(user_name)
       params = RPS.orm.get_user_info_by_user_name(user_name)
       user = RPS::User.new(
-        params.first["id"],
         params.first["user_name"],
+        params.first["id"].to_i,
         params.first["password_digest"],
-        params.first["wins"],
-        params.first["losses"]
+        params.first["wins"].to_i,
+        params.first["losses"].to_i
       )
       return user
     end
@@ -56,25 +57,16 @@ module RPS
     def self.get_user_object_by_user_id(user_id)
       params = RPS.orm.get_user_info_by_user_id(user_id)
       user = RPS::User.new(
-        params.first["id"],
         params.first["user_name"],
+        params.first["id"].to_i,
         params.first["password_digest"],
-        params.first["wins"],
-        params.first["losses"]
+        params.first["wins"].to_i,
+        params.first["losses"].to_i
       )
       return user
     end
   end
 end
-
-
-
-
-
-
-
-
-
 
 
 
