@@ -6,21 +6,23 @@ command = <<-SQL
 CREATE TABLE users(
    id SERIAL,
    user_name text,
-   password text,
+   password_digest text,
    wins integer,
    losses integer,
    PRIMARY KEY( id )
 );
 
-CREATE TABLE match_records(
+CREATE TABLE matchs(
    id SERIAL,
    user1_id integer,
    user2_id integer,
-   history_hash text,
-   game_count integer,
-   move1_made text,
-   move2_made text,
-   winner integer,
+   user1_game_wins integer,
+   user2_game_wins integer,
+   user1_move text,
+   user2_move text,
+   game_history_hash text,
+   last_game_winner integer,
+   match_winner integer,
    PRIMARY KEY( id )
 );
 SQL
