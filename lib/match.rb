@@ -1,79 +1,185 @@
 module RPS
   class Match
-    def self.run(user1_id, user2_id)
-      #check to see if match between 2 users exists
-        #if not start new match
-        #if yes return history hash of match from database 
-      #check to see if move of user has been made from database
-        #if not ask for move
-        #if yes, continue
-      #check to see if both moves have been made from database
-        #if not ask user to wait
-        #if yes return hash of result and update history hash in database
-      #
-
+    attr_accessor :user1,
+      :user2,
+      :user1_game_wins,
+      :user2_game_wins,
+      :user1_move,
+      :user2_move,
+      :game_history_hash,
+      :last_game_winner,
+      :match_winner,
+      :match_id
+    def initialize( 
+      user1, 
+      user2=nil,
+      user1_wins=0, 
+      user2_wins=0,
+      user1_move=nil,
+      user2_move=nil,
+      game_history_hash="",
+      game_winner=nil,
+      match_winner=nil,
+      id=nil
+    )
+      @user1 = user1
+      @user2 = user2
+      @user1_game_wins = user1_wins
+      @user2_game_wins = user2_wins
+      @user1_move = user1_move
+      @user2_move = user2_move
+      @game_history_hash = game_history_hash
+      @last_game_winner = game_winner
+      @match_winner = match_winner
+      @match_id = id
     end
-
-    def play_match
-      game = RPS::Game.new
-      while @win1 < 3 || @win2 < 3
-        user1_throw = gets.chomp
-        user2_throw = gets.chomp
-        result = game.play(user1_throw, user2_throw)
-
+    def create!
+      id_from_db = RPS.orm.create_match(@user1.id)
+      @match_id = id_from_db
+    end
+    def save!
+      RPS.orm.update_match(
+        @user1.id,
+        @user2.id,
+        @user1_game_wins,
+        @user2_game_wins,
+        @user1_move,
+        @user2_move,
+        @game_history_hash,
+        @last_game_winner,
+        @match_winner,
+        @match_id,
+      )
+    end
+    def find_random_opponent
+      if @user2.nil?
+        random_user = RPS.orm._get_random_user()
+        if random_user[:id] != @user1.id
+          @user2 = RPS::User.new()
+        else
+          find_random_opponent
+        end
       end
     end
-
-    def history_decoder
+    def moves_made?
+      user1 = false
+      user2 = false
+      user1 = true if @user1_move != nil
+      user2 = true if @user2_move != nil
+      return [user1, user2]
     end
-    def check_for_win
-      if 
-    end
-
-
-    
-  end
-
-  class Game
-    def initialize
-      @win1 = 0
-      @win2 = 0
-      @game_history = ""
-      @beats = {
+    def game_winner
+      beats = {
         "rock" => "scissors",
         "paper" => "rock",
         "scissors" => "paper"
       }
-    end
-    def play(user1_throw, user2_throw)
-      user1_throw = user1_throw.downcase
-      user2_throw = user2_throw.downcase
-      if user1_throw == user2_throw
-        add_to_game_history("12T")
+      if user1_move == user2_move
+        @last_game_winner = nil
         return "tie"
-      elsif @beats[user1_throw] == user2_throw
-        @win1 +=1
-        add_to_game_history("1#{user1_throw.slice(0)}2#{user2_throw.slice(0)}")
+      elsif beats[user1_move] == user2_move
+        @user1_game_wins += 1
+        @last_game_winner = @user1
         return "user1_win"
       else
-        @win2 +=1
-        add_to_game_history("1#{user1_throw.slice(0)}2#{user2_throw.slice(0)}")
+        @user2_game_wins += 1
+        @last_game_winner = @user2
         return "user2_win"
       end
     end
-    def add_to_game_history(game_outcome)
-      @game_history << game_outcome
+    def clear_moves
+      @user1_move = nil
+      @user2_move = nil
     end
 
+    def history_decoder
+      games_hash = []
+      games_hash += @game_history_hash.split(":")
+      p "games_hash --> #{games_hash}"
+
+      history = Hash.new(){nil}
+
+      games_hash.each_with_index do |game_hash, index|
+        game_number = "game" + (index+1).to_s
+        history[game_number.to_sym] = {}
+        turn_hash = game_hash.split("*")
+        history[game_number.to_sym][:user_1_move] = turn_hash[0][1].to_s
+        history[game_number.to_sym][:user_2_move] = turn_hash[1][1].to_s
+        history[game_number.to_sym][:winner] = turn_hash[2][1].to_s
+      end
+      
+      p "history --> #{history}"
+
+    end  
+    def add_to_history
+      w = 't'
+      w = 1 if @last_game_winner == @user1
+      w = 2 if @last_game_winner == @user2
+      @game_history_hash << "1#{@user1_move.slice(0)}*2#{@user2_move.slice(0)}*w#{w}:"
+    end
 
   end
 end
 
+user1 = RPS::User.new("sachinahuja",1)
+p "user1.user_name --> #{user1.user_name}"
+p "user1.id --> #{user1.id}"
+user1.update_password("igohardinthepaint")
+p "user1.password_digest --> #{user1.password_digest}"
+p "wrong password --> #{user1.has_password?("blah blah blah")}"
+p "right password --> #{user1.has_password?("igohardinthepaint")}"
 
-game = RPS::Game.new
+match = RPS::Match.new(user1)
+p "match.user1 --> #{match.user1.inspect}"
+user2 = RPS::User.new("ahujasachin",2)
+match.user2 = user2
+match.match_id = 1
 
-p game.play("rock", "scissors")
-p game.play("paper", "scissors")
-p game.play("scissors", "rock")
-p game.play("scissors", "paper")
-p game.play("rock", "scissors")
+p "match.moves_made? --> #{match.moves_made?}"
+match.user1_move = "rock"
+p "match.moves_made? --> #{match.moves_made?}"
+match.user2_move = "scissors"
+p "match.moves_made? --> #{match.moves_made?}"
+
+p "match.game_winner --> #{match.game_winner}"
+
+match.add_to_history
+p "match.game_history_hash --> #{match.game_history_hash}"
+
+match.clear_moves
+match.user1_move = "paper"
+match.user2_move = "scissors"
+match.game_winner
+match.add_to_history
+
+match.clear_moves
+match.user1_move = "rock"
+match.user2_move = "rock"
+match.game_winner
+match.add_to_history
+
+match.clear_moves
+match.user1_move = "scissors"
+match.user2_move = "rock"
+match.game_winner
+match.add_to_history
+
+match.clear_moves
+match.user1_move = "scissors"
+match.user2_move = "paper"
+match.game_winner
+match.add_to_history
+
+p "match.game_history_hash --> #{match.game_history_hash}"
+
+match.history_decoder
+
+# game = RPS::Game.new
+
+# p game.play("rock", "scissors")
+# p game.play("paper", "scissors")
+# p game.play("scissors", "rock")
+# p game.play("scissors", "paper")
+# p game.play("rock", "scissors")
+
+

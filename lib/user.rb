@@ -2,9 +2,9 @@ require 'digest'
 
 module RPS
   class User
-    attr_reader :id, :user_name
+    attr_accessor :id, :user_name, :password_digest
 
-    def initialize(id=nil, user_name, password_digest=nil)
+    def initialize(user_name, id=nil, password_digest=nil)
       @id = id
       @user_name = user_name
       @password_digest = password_digest

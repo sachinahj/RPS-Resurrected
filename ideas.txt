@@ -1,0 +1,11 @@
+ideas
+#check to see if match between 2 users exists
+  #if not start new match
+  #if yes return history hash of match from database 
+#check to see if move of user has been made from database
+  #if not ask for move
+  #if yes, continue
+#check to see if both moves have been made from database
+  #if not ask user to wait
+  #if yes return hash of result and update history hash in database
+  

@@ -18,8 +18,8 @@ CREATE TABLE match_records(
    user2_id integer,
    history_hash text,
    game_count integer,
-   move1_made boolean,
-   move2_made boolean,
+   move1_made text,
+   move2_made text,
    winner integer,
    PRIMARY KEY( id )
 );
