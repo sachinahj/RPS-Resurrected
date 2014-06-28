@@ -1,3 +1,5 @@
+# be ruby lib/databases/tables_initializer.rb
+
 require 'pg'
 
 db = PG.connect(host: 'localhost', dbname: 'RPS_db')
@@ -5,10 +7,11 @@ db = PG.connect(host: 'localhost', dbname: 'RPS_db')
 command = <<-SQL
 CREATE TABLE users(
    id SERIAL,
-   user_name text,
+   username text,
    password_digest text,
    wins integer,
    losses integer,
+   session_id text,
    PRIMARY KEY( id )
 );
 

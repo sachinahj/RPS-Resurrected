@@ -7,10 +7,15 @@ module RPS
     end
 
     ##----------USER ORM METHODS----------------------
-    def create_user(user_name)
+    def create_user(username)
+
+      result = @db.exec(%Q[SELECT * FROM users WHERE username = '#{username}'])
+      params = result.map{|x| x}
+      return nil if !(params.empty?)
+
       command = <<-SQL
-        INSERT INTO users(user_name, password_digest, wins, losses)
-        VALUES ('#{user_name}', '#{nil}', 0, 0)
+        INSERT INTO users(username)
+        VALUES ('#{username}')
         returning id;
       SQL
       result = @db.exec(command)
@@ -18,9 +23,9 @@ module RPS
       return params.first["id"]
     end
 
-    def get_user_info_by_user_name(user_name)
+    def get_user_info_by_username(username)
       command = <<-SQL
-        SELECT * FROM users WHERE user_name = '#{user_name}'
+        SELECT * FROM users WHERE username = '#{username}'
       SQL
       result = @db.exec(command)
       params = result.map{|x| x}
@@ -36,11 +41,11 @@ module RPS
       return params
     end
 
-    def update_user(user_name, id, password_digest, wins, losses)
+    def update_user(username, id, password_digest, wins, losses)
       command = <<-SQL
         UPDATE users 
-        SET (user_name, password_digest, wins, losses) = 
-        ('#{user_name}', '#{password_digest}', '#{wins}', '#{losses}')
+        SET (username, password_digest, wins, losses) = 
+        ('#{username}', '#{password_digest}', '#{wins}', '#{losses}')
         WHERE id = '#{id}'
         returning *;
       SQL
