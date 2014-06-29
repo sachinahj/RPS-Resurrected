@@ -47,6 +47,17 @@ module RPS
       @password_digest ==  Digest::SHA1.hexdigest(password)
     end
 
+    def create_session
+      random_phrase = rand(100).to_s + username + rand(100).to_s
+      @session_id = Digest::SHA1.hexdigest(random_phrase)
+    end
+
+    def pending_match
+      match = RPS.orm.get_match_info_by_user_id(@id)
+      return nil if match == nil
+      return match
+    end
+
     def self.get_user_object_by_username(username)
       params = RPS.orm.get_user_info_by_username(username)
       return nil if params.empty?
@@ -74,8 +85,6 @@ module RPS
       )
       return user
     end
-
-
   end
 end
 

@@ -1,34 +1,38 @@
 module RPS
   class UserSignIn
-
     def self.run(params)
-      p "params from SignIn --> #{params}"
+      # params = {:username, :password}
       user = RPS::User.get_user_object_by_username(params[:username])
-
 
       if  user == nil
         return {
           :success? => false,
           :error => :no_user_exist,
-          :session_id => nil
+          :session_id => nil,
+          :user => nil
         }
       elsif user.has_password?(params[:password]) == false 
         return {
           :success? => false,
           :error => :invalid_password,
-          :session_id => nil
+          :session_id => nil,
+          :user => nil
         }
       elsif user.has_password?(params[:password]) == true
+        session_id = user.create_session
+        user = user.save!
         return {
           :success? => true,
           :error => :none,
-          :session_id => Honkr.db.create_session(:user_id => user.id)
+          :session_id => session_id,
+          :user => user
         }
       else
         return {
           :success? => false,
           :error => :no_idea,
-          :session_id => nil
+          :session_id => nil,
+          :user => nil
         }
       end
     end
@@ -36,18 +40,21 @@ module RPS
 end
 
 
-# while(true)
-  def sign_in_test
-    puts "username:"
-    username = gets.chomp
-    puts "password:"
-    password = gets.chomp
-    params = {
-      username: username,
-      password: password
-    }
-    p RPS::UserSignIn.run(params)
 
-  end
-# end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

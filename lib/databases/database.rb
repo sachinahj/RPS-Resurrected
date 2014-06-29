@@ -108,6 +108,16 @@ module RPS
       return params
     end
 
+    def get_match_info_by_user_id(user1_id)
+      command = <<-SQL
+        SELECT * FROM matches WHERE user1_id = '#{user1_id}' OR user2_id = '#{user1_id}' AND match_winner_id = 0
+      SQL
+      result = @db.exec(command)
+      params = result.map{|x| x}
+      return nil if params.empty?
+      return params
+    end
+
   end
 
   def self.orm
