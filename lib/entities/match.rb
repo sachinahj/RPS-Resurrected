@@ -73,8 +73,8 @@ module RPS
     def moves_made?
       user1 = false
       user2 = false
-      user1 = true if @user1_move != nil
-      user2 = true if @user2_move != nil
+      user1 = true if @user1_move != ""
+      user2 = true if @user2_move != ""
       return [user1, user2]
     end
     def game_winner

@@ -4,10 +4,13 @@ require 'sinatra-contrib'
 set :bind, '0.0.0.0' # This is needed for Vagrant
 
 get '/' do
-  "landing page"
+  erb :layout
 end
 
-post '/test' do
+get '/sign_up' do
+
+end
+post '/sign_up' do
   puts params
   @name = params[:name]
   @email = params[:mail]

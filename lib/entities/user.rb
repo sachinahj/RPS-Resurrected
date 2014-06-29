@@ -53,8 +53,10 @@ module RPS
     end
 
     def pending_match
-      match = RPS.orm.get_match_info_by_user_id(@id)
-      return nil if match == nil
+      match_info = RPS.orm.get_match_info_by_user_id(@id)
+      p "match_info --> #{match_info}"
+      return nil if match_info == nil
+      match = RPS::Match.get_match_object_by_match_id(match_info.first["id"].to_i)
       return match
     end
 

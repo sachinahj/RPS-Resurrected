@@ -5,6 +5,7 @@ require_relative 'scripts/user_sign_in.rb'
 require_relative 'scripts/user_sign_up.rb'
 require_relative 'scripts/user_home_page.rb'
 require_relative 'scripts/new_match.rb'
+require_relative 'scripts/continue_match.rb'
 
 # while(true)
   def sign_in_test
@@ -14,7 +15,7 @@ require_relative 'scripts/new_match.rb'
     print "password: "
     password = gets.chomp
     params = {
-      username: username,
+      username: username.downcase,
       password: password
     }
     params = RPS::UserSignIn.run(params)
@@ -41,7 +42,7 @@ require_relative 'scripts/new_match.rb'
     print "confirm password: "
     password_confirm = gets.chomp
     params = {
-      username: username,
+      username: username.downcase,
       password: password,
       password_confirm: password_confirm
     }
@@ -73,4 +74,4 @@ def run
   end
 end
 
-# run
+run
