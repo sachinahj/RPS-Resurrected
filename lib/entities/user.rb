@@ -5,22 +5,22 @@ module RPS
     attr_accessor :username, 
       :id,
       :password_digest,
-      :overall_wins,
-      :overall_losses,
+      :wins,
+      :losses,
       :session_id
     def initialize(
       username,
       id=nil,
       password_digest=nil,
-      overall_wins=0,
-      overall_losses=0,
+      wins=0,
+      losses=0,
       session_id = nil
     )
       @id = id
       @username = username
       @password_digest = password_digest
-      @overall_wins = overall_wins
-      @overall_losses = overall_losses
+      @wins = wins
+      @losses = losses
       @session_id = session_id
     end
     def create!
@@ -34,8 +34,8 @@ module RPS
         @username,
         @id,
         @password_digest,
-        @overall_wins,
-        @overall_losses,
+        @wins,
+        @losses,
         @session_id
       )
       self

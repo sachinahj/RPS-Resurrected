@@ -7,18 +7,18 @@ module RPS
       :user1_move,
       :user2_move,
       :game_history_hash,
-      :last_game_winner,
-      :match_winner,
+      :last_game_winner_id,
+      :match_winner_id,
       :match_id
     def initialize( 
       user1, 
-      user2=0,
+      user2=nil,
       user1_wins=0, 
       user2_wins=0,
       user1_move=nil,
       user2_move=nil,
       game_history_hash="",
-      game_winner_id=0,
+      last_game_winner_id=0,
       match_winner_id=0,
       id=nil
     )
@@ -29,13 +29,15 @@ module RPS
       @user1_move = user1_move
       @user2_move = user2_move
       @game_history_hash = game_history_hash
-      @last_game_winner_id = game_winner_id
+      @last_game_winner_id = last_game_winner_id
       @match_winner_id = match_winner_id
       @match_id = id
     end
     def create!
       id_from_db = RPS.orm.create_match(@user1.id)
+      return nil if id_from_db == nil
       @match_id = id_from_db
+      self
     end
     def save!
       user1_id = 0
@@ -82,15 +84,15 @@ module RPS
         "scissors" => "paper"
       }
       if user1_move == user2_move
-        @last_game_winner = nil
+        @last_game_winner_id = 0
         return "tie"
       elsif beats[user1_move] == user2_move
         @user1_game_wins += 1
-        @last_game_winner = @user1
+        @last_game_winner_id = @user1.id
         return "user1_win"
       else
         @user2_game_wins += 1
-        @last_game_winner = @user2
+        @last_game_winner_id = @user2.id
         return "user2_win"
       end
     end
@@ -116,8 +118,8 @@ module RPS
     end  
     def add_to_history
       w = 't'
-      w = 1 if @last_game_winner == @user1
-      w = 2 if @last_game_winner == @user2
+      w = 1 if @last_game_winner_id == @user1.id
+      w = 2 if @last_game_winner_id == @user2.id
       @game_history_hash << "1#{@user1_move.slice(0)}*2#{@user2_move.slice(0)}*w#{w}:"
     end
 

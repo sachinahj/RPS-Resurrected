@@ -20,7 +20,7 @@ module RPS
       SQL
       result = @db.exec(command)
       params = result.map{|x| x}
-      return params.first["id"]
+      return params.first["id"].to_i
     end
 
     def get_user_info_by_username(username)
@@ -41,11 +41,11 @@ module RPS
       return params
     end
 
-    def update_user(username, id, password_digest, wins, losses)
+    def update_user(username, id, password_digest, wins, losses, session_id)
       command = <<-SQL
         UPDATE users 
-        SET (username, password_digest, wins, losses) = 
-        ('#{username}', '#{password_digest}', '#{wins}', '#{losses}')
+        SET (username, password_digest, wins, losses, session_id) = 
+        ('#{username}', '#{password_digest}', '#{wins}', '#{losses}', '#{session_id}')
         WHERE id = '#{id}'
         returning *;
       SQL
@@ -72,7 +72,7 @@ module RPS
       SQL
       result = @db.exec(command)
       params = result.map{|x| x}
-      return params.first["id"]
+      return params.first["id"].to_i
     end
 
     def update_match(
