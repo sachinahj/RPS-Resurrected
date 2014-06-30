@@ -8,8 +8,10 @@
 
 <% @match = @result[:user].pending_match %>
 <% if @match.nil? %>
-  <% params = {match: @match, user: @result[:user]} %>
+  <% session[:user_id] = @result[:user].id %>
   <a href='/new_game'>New Game</a>
 <% else %>
-  <a href='#'>Continue Game</a>
+  <% session[:user_id] = @result[:user].id %>
+  <% session[:match_id] = @match.match_id %>
+  <a href='/continue_game'>Continue Game</a>
 <% end %>

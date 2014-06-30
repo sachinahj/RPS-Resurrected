@@ -86,6 +86,20 @@ module RPS
       )
       return user
     end
+
+    def self.get_user_object_by_session_id(session_id)
+      params = RPS.orm.get_user_info_by_session_id(session_id)
+      return nil if params.empty?
+      user = RPS::User.new(
+        params.first["username"],
+        params.first["id"].to_i,
+        params.first["password_digest"],
+        params.first["wins"].to_i,
+        params.first["losses"].to_i,
+        params.first["session_id"]
+      )
+      return user
+    end
   end
 end
 

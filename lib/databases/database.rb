@@ -41,6 +41,15 @@ module RPS
       return params
     end
 
+    def get_user_info_by_session_id(session_id)
+      command = <<-SQL
+        SELECT * FROM users WHERE session_id = '#{session_id}'
+      SQL
+      result = @db.exec(command)
+      params = result.map{|x| x}
+      return params
+    end
+
     def update_user(username, id, password_digest, wins, losses, session_id)
       command = <<-SQL
         UPDATE users 
