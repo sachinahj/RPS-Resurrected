@@ -15,6 +15,7 @@ get '/sign_up' do
   @result =  {
     :success? => nil,
     :error => nil,
+    :sesh_id => nil,
     :user => nil
   }
   erb :sign_up
@@ -23,7 +24,9 @@ end
 post '/sign_up' do
   @result = RPS::UserSignUp.run(params)
   if @result[:success?]
-    erb :user_homepage
+    session[:sesh_id] = @result[:user].session_id
+    session[:user_id] = @result[:user].id
+    redirect to '/user_homepage'
   else
     erb :sign_up
   end
@@ -32,18 +35,14 @@ end
 get '/sign_in' do
   if session[:sesh_id]
     user = RPS::User.get_user_object_by_session_id(session[:sesh_id])
-    @result = {
-      :success? => true,
-      :error => nil,
-      :session_id => session[:sesh_id],
-      :user => user
-    }
-    erb :user_homepage
+    session[:sesh_id] = user.session_id
+    session[:user_id] = user.id
+    redirect to '/user_homepage'
   else
     @result = {
       :success? => nil,
       :error => nil,
-      :session_id => nil,
+      :sesh_id => nil,
       :user => nil
     }
     erb :sign_in
@@ -54,14 +53,14 @@ post '/sign_in' do
   @result = RPS::UserSignIn.run(params)
   if @result[:success?]
     session[:sesh_id] = @result[:sesh_id]
-    erb :user_homepage
+    session[:user_id] = @result[:user].id
+    redirect to '/user_homepage'
   else
     erb :sign_in
   end
 end
 
 get '/new_game' do
-  p "session[:user_id] --> #{session[:user_id]}"
   @user = RPS::User.get_user_object_by_user_id(session[:user_id])
   @match = RPS::Match.new(@user)
   @match.create!
@@ -87,8 +86,6 @@ get '/new_game' do
 end
 
 get '/continue_game' do
-  p "session[:user_id] --> #{session[:user_id]}"
-  p "session[:match_id] --> #{session[:match_id]}"
   @user = RPS::User.get_user_object_by_user_id(session[:user_id])
   @match = RPS::Match.get_match_object_by_match_id(session[:match_id])
   @user1 = @match.user1
@@ -110,12 +107,6 @@ get '/continue_game' do
 end
 
 post '/made_move' do
-  p "session[:user_id] --> #{session[:user_id]}"
-  p "session[:match_id] --> #{session[:match_id]}"
-  p "session[:user_index] --> #{session[:user_index]}"
-  p "session[:opponent_index] --> #{session[:opponent_index]}"
-  p "params --> #{params.inspect}"
-
   match = RPS::Match.get_match_object_by_match_id(session[:match_id])
   match.user1_move = params["choice"] if session[:user_index] == 0
   match.user2_move = params["choice"] if session[:user_index] == 1
@@ -128,7 +119,14 @@ post '/made_move' do
     match.save!
   end
 
+  match.game_over?
+  match.save!
   redirect to '/continue_game'
+end
+
+get '/user_homepage' do
+  @user = RPS::User.get_user_object_by_user_id(session[:user_id])
+  erb :user_homepage
 end
 
 get '/logout' do
@@ -139,11 +137,3 @@ end
 get '/contact' do
   erb :contact
 end
-# post '/sign_up' do
-#   puts params
-#   @name = params[:name]
-#   @email = params[:mail]
-#   @vegetarian = params[:vegetarian]
-#   @blood_type = params[:bloodtype]
-#   erb :summary
-# end

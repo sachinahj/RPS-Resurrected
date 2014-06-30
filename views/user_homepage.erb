@@ -1,17 +1,17 @@
-<center><h3><%=@result[:user].username%>'s Profile</h3></center>
+<center><h3><%=@user.username%>'s Profile</h3></center>
 
-<p>user id: <%=@result[:user].id%></p>
-<p>password digest: <%=@result[:user].password_digest%></p>
-<p>wins: <%=@result[:user].wins%></p>
-<p>losses: <%=@result[:user].losses%></p>
-<p>session id: <%=@result[:user].session_id%></p>
+<p>user id: <%=@user.id%></p>
+<p>password digest: <%=@user.password_digest%></p>
+<p>wins: <%=@user.wins%></p>
+<p>losses: <%=@user.losses%></p>
+<p>session id: <%=@user.session_id%></p>
 
-<% @match = @result[:user].pending_match %>
+<% @match = @user.pending_match %>
 <% if @match.nil? %>
-  <% session[:user_id] = @result[:user].id %>
+  <% session[:user_id] = @user.id %>
   <a href='/new_game'>New Game</a>
 <% else %>
-  <% session[:user_id] = @result[:user].id %>
+  <% session[:user_id] = @user.id %>
   <% session[:match_id] = @match.match_id %>
   <a href='/continue_game'>Continue Game</a>
 <% end %>

@@ -1,7 +1,7 @@
 <center><h3>Match</h3></center>
 
-<p>player 1: <%= @user1.username %><br>
-player 2: <%= @user2.username %><br>
+<p>player 1: <%= @user1.username %> (<%= @user1.id %>)<br>
+player 2: <%= @user2.username %> (<%= @user2.id %>)<br>
 player 1 wins: <%= @match.user1_game_wins %><br>
 player 2 wins: <%= @match.user2_game_wins %><br>
 player 1 move: <%= @match.moves_made?[0] ? "Move Made" : "Waiting on Move" %><br>
@@ -10,7 +10,11 @@ game history: <%= @match.game_history_hash %><br>
 last game winner id: <%= @match.last_game_winner_id %><br>
 match winner id: <%= @match.match_winner_id %></p>
 
-<% if @match.moves_made?[session[:user_index]] == false %>
+
+<% if @match.match_winner_id != 0 %>
+    <p>Game Over<p>
+    <a href='/user_homepage'>User Homepage</a>
+<% elsif @match.moves_made?[session[:user_index]] == false %>
   <%= erb :_move_choice %>
 <% elsif @match.moves_made?[session[:opponent_index]] == false %>
   <p>Waiting on opponents to make a move<p>
