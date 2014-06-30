@@ -1,0 +1,10 @@
+<%#= @match %>
+<%#= @result %>
+<%# @match = RPS::Match.new(@result[:user]) %>
+
+<form method="post" action="/move_result">
+  <input type="radio" name="choice"> Rock<br>
+  <input type="radio" name="choice"> Paper<br>
+  <input type="radio" name="choice"> Scissors<br>
+  <input type="submit" class="small button"></input>
+</form>

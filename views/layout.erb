@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>RPS: Chuck up the Deuce Edition</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" text="text/css" href="/RPS.css">
+        <link rel="stylesheet" text="text/css" href="/foundation.min.css">
+    </head>
+    <body class="background">
+      
+      <%= erb :_header %>
+
+      <div class="row">
+        <div class="gamebox small-11 medium-9 large-7 small-centered medium-centered large-centered columns">
+          <%= yield %>
+        </div>
+      </div>
+      
+      <script type="text/javascript" src="/jquery-1.11.1.min.js"></script>
+      <script type="text/javascript" src="/foundation.min.js"></script>
+      <script>$(document).foundation();</script>
+
+    </body>
+</html>

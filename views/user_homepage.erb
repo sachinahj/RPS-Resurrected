@@ -1,0 +1,15 @@
+<center><h3><%=@result[:user].username%>'s Profile</h3></center>
+
+<p>user id: <%=@result[:user].id%></p>
+<p>password digest: <%=@result[:user].password_digest%></p>
+<p>wins: <%=@result[:user].wins%></p>
+<p>losses: <%=@result[:user].losses%></p>
+<p>session id: <%=@result[:user].session_id%></p>
+
+<% @match = @result[:user].pending_match %>
+<% if @match.nil? %>
+  <% params = {match: @match, user: @result[:user]} %>
+  <a href='/new_game'>New Game</a>
+<% else %>
+  <a href='#'>Continue Game</a>
+<% end %>

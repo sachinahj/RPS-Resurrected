@@ -1,0 +1,13 @@
+<center><h3>Sign Up</h3></center>
+<br><br>
+<div class="row">
+  <div class="small-11 medium-10 large-9 small-centered medium-centered large-centered columns">
+      <form method="post" action="/sign_up">
+        <h6><span class="inputbox">Username: </span><input type="text" name="username"/></h6>
+        <h6><span class="inputbox">Password: </span><input type="password" name="password"/></h6>
+        <h6><span class="inputbox">Confirm Password: </span><input type="password" name="password_confirm"/></h6>
+        <input type="submit" class="small button"></input>
+      </form>
+      <p><%= @result[:error] %><p>
+  </div>
+</div>
