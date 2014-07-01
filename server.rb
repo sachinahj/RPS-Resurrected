@@ -85,10 +85,9 @@ get '/new_game' do
   erb :match_homepage
 end
 
-get '/continue_game' do
-  p "session[:match_id] --> #{session[:match_id]}"
-  p "params --> #{params}"
-  result = RPS::ContinueMatch.run(session[:user_id], session[:match_id])
+
+get '/continue_game/:user_id/:match_id' do |user_id, match_id|
+  result = RPS::ContinueMatch.run(user_id.to_i, match_id.to_i)
 
   @user1 = result[:user1]
   @user2 = result[:user2]
@@ -107,7 +106,20 @@ end
 
 post '/made_move' do
   RPS::Turn.run(session, params)
-  redirect to '/continue_game'
+  user_id = session[:user1_id] if session[:user_index] == 0
+  user_id = session[:user2_id] if session[:user_index] == 1
+  match_id = session[:match_id]
+  redirect to "/continue_game/#{user_id}/#{match_id}"
+end
+
+get '/leaderboard' do
+  results = RPS::User.get_all_user_objects
+  @scores = []
+  results.each do |user|
+    @scores << {username: user["username"], id: user["id"].to_i, wins: user["wins"].to_i, losses: user["losses"].to_i}
+  end
+  @highscores = @scores.sort_by {|user| -user[:wins]}
+  erb :leaderboard
 end
 
 get '/logout' do

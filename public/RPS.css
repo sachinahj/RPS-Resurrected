@@ -7,10 +7,9 @@
 
 .gamebox {
   background: rgba(255, 255, 255, 0.8);
-  padding: 0.5rem;
+  padding: 0.5rem 0.5rem 2rem 0.5rem;
   margin-top: 5%;
   border-radius: 1rem;
-  height: 35rem;
 }
 
 .columns * {

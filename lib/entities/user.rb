@@ -106,6 +106,12 @@ module RPS
       )
       return user
     end
+
+    def self.get_all_user_objects
+      params = RPS.orm.get_all_users_info
+      return nil if params.empty?
+      return params
+    end
   end
 end
 

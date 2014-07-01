@@ -72,6 +72,15 @@ module RPS
       return params
     end
 
+    def get_all_users_info
+      command = <<-SQL
+        SELECT * FROM users;
+      SQL
+      result = @db.exec(command)
+      params = result.map {|x| x}
+      return params
+    end
+
     ##----------MATCH ORM METHODS----------------------
     def create_match(user1_id)
       command = <<-SQL
