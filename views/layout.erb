@@ -22,6 +22,23 @@
       <script type="text/javascript" src="/jquery-1.11.1.min.js"></script>
       <script type="text/javascript" src="/foundation.min.js"></script>
       <script>$(document).foundation();</script>
+      <script type="text/javascript">
+         $('input[type=text].email-builder').on('keyup', function() {
+           var maillink = "mailto:realquick@hardinthepaint.com?subject=RPS%3A%20Chunk%20up%20the%20deuce%20edition!";
+           var name = $('input[name=name].email-builder').val();
+           var email = $('input[name=email].email-builder').val();
+           var message = $('input[name=body].email-builder').val();
+
+           name = "From%3A%20" + encodeURIComponent(name) + "%0D";
+           email = "Email%3A%20" + encodeURIComponent(email) + "%0D%0D";
+           message = encodeURIComponent(message);
+
+           var addToMailLink = "&body=" + name + email + message;
+
+           maillink = maillink + addToMailLink;
+           $('.send-feedback-email').attr('href', maillink);
+         });
+        </script>
 
     </body>
 </html>
