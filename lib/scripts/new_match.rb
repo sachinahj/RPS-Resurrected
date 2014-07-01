@@ -1,56 +1,31 @@
 module RPS
   class NewMatch
-    def self.run(user)
+    def self.run(user_id)
+      user = RPS::User.get_user_object_by_user_id(user_id)
+      return nil if user.nil?
       match = RPS::Match.new(user)
       match.create!
-      puts "---New Match---"
       match.assign_random_opponent
       match.save!
-      puts "Player 1: #{match.user1.username}"
-      puts "Player 2: #{match.user2.username}"
+      user1 = match.user1
+      user2 = match.user2
 
-      while(true)
-        if match.user1_move == nil
-          puts "Your Move!"
-          print "r, p, s?: "
-          move = gets.chomp
-          if move.downcase == "r"
-            match.user1_move = "rock"
-            break
-          elsif move.downcase == "s"
-            match.user1_move = "paper"
-            break
-          elsif move.downcase == "p"
-            match.user1_move = "scissors"
-            break
-          end
-        end
+      if user_id == user1.id
+        user_index = 0 
+        opponent_index = 1
       end
-      match.save!
-
-      if match.moves_made?[1] == false
-        puts "Waiting on Player 2 to make move"
+      if user_id == user2.id
+        user_index = 1
+        opponent_index = 0
       end
 
-      if match.moves_made? == [true, true]
-        puts "---Game Results---"
-        winner = match.game_winner
-        match.add_to_history
-        match.clear_moves
-        puts "#{match.user1.username}: #{match.user1_move}"
-        puts "#{match.user2.username}: #{match.user2_move}"
-        if winner == "user1_win"
-          puts "#{match.user1.username} won the game!"
-        elsif winner == "user2_win"
-          puts "#{match.user2.username} won the game!"
-        end
-        match.save!
-        puts "---Match Results---"
-        puts "Match History: #{match.game_history_hash}"
-        puts "#{match.user1.username} wins: #{match.user1_game_sins}"
-        puts "#{match.user2.username} wins: #{match.user2_game_wins}"
-        puts "Continue to next game..."
-      end
+      return {
+        :user1 => user1,
+        :user2 => user2,
+        :match => match,
+        :user_index => user_index,
+        :opponent_index => opponent_index
+      }
     end
   end
 end

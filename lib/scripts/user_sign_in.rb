@@ -18,21 +18,14 @@ module RPS
           :sesh_id => nil,
           :user => nil
         }
-      elsif user.has_password?(params[:password]) == true
+      else user.has_password?(params[:password]) == true
         sesh_id = user.create_session
         user = user.save!
         return {
           :success? => true,
-          :error => :none,
+          :error => nil,
           :sesh_id => sesh_id,
           :user => user
-        }
-      else
-        return {
-          :success? => false,
-          :error => :no_idea,
-          :sesh_id => nil,
-          :user => nil
         }
       end
     end

@@ -24,7 +24,7 @@ end
 post '/sign_up' do
   @result = RPS::UserSignUp.run(params)
   if @result[:success?]
-    session[:sesh_id] = @result[:user].session_id
+    session[:sesh_id] = @result[:sesh_id]
     session[:user_id] = @result[:user].id
     redirect to '/user_homepage'
   else
@@ -60,73 +60,54 @@ post '/sign_in' do
   end
 end
 
-get '/new_game' do
+get '/user_homepage' do
   @user = RPS::User.get_user_object_by_user_id(session[:user_id])
-  @match = RPS::Match.new(@user)
-  @match.create!
-  @match.assign_random_opponent
-  @match.save!
-  @user1 = @match.user1
-  @user2 = @match.user2
+  @matches = @user.pending_matches
+  @matches = [] if @matches == nil 
+  erb :user_homepage
+end
 
-  if @user.id == @user1.id
-    user_index = 0 
-    opponent_index = 1
-  end
-  if @user.id == @user2.id
-    user_index = 1
-    opponent_index = 0
-  end
+get '/new_game' do
+  result = RPS::NewMatch.run(session[:user_id])
 
+  @user1 = result[:user1]
+  @user2 = result[:user2]
+  @match = result[:match]
+  @user_index = result[:user_index]
+  @opponent_index = result[:opponent_index]
+
+  session[:user1_id] = @user1.id
+  session[:user2_id] = @user2.id
   session[:match_id] = @match.match_id
-  session[:user_index] = user_index
-  session[:opponent_index] = opponent_index
+  session[:user_index] = @user_index
+  session[:opponent_index] = @opponent_index
 
   erb :match_homepage
 end
 
 get '/continue_game' do
-  @user = RPS::User.get_user_object_by_user_id(session[:user_id])
-  @match = RPS::Match.get_match_object_by_match_id(session[:match_id])
-  @user1 = @match.user1
-  @user2 = @match.user2
+  p "session[:match_id] --> #{session[:match_id]}"
+  p "params --> #{params}"
+  result = RPS::ContinueMatch.run(session[:user_id], session[:match_id])
 
-  if @user.id == @user1.id
-    user_index = 0 
-    opponent_index = 1
-  end
-  if @user.id == @user2.id
-    user_index = 1
-    opponent_index = 0
-  end
+  @user1 = result[:user1]
+  @user2 = result[:user2]
+  @match = result[:match]
+  @user_index = result[:user_index]
+  @opponent_index = result[:opponent_index]
 
-  session[:user_index] = user_index
-  session[:opponent_index] = opponent_index
+  session[:user1_id] = @user1.id
+  session[:user2_id] = @user2.id
+  session[:match_id] = @match.match_id
+  session[:user_index] = @user_index
+  session[:opponent_index] = @opponent_index
 
   erb :match_homepage
 end
 
 post '/made_move' do
-  match = RPS::Match.get_match_object_by_match_id(session[:match_id])
-  match.user1_move = params["choice"] if session[:user_index] == 0
-  match.user2_move = params["choice"] if session[:user_index] == 1
-  match.save!
-
-  if match.moves_made? == [true, true]
-    winner = match.game_winner
-    match.add_to_history
-    match.clear_moves
-    match.save!
-  end
-
-  match.game_over?
-  match.save!
+  RPS::Turn.run(session, params)
   redirect to '/continue_game'
-end
-
-get '/user_homepage' do
-  @user = RPS::User.get_user_object_by_user_id(session[:user_id])
-  erb :user_homepage
 end
 
 get '/logout' do

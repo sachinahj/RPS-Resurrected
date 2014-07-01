@@ -1,17 +1,25 @@
-<center><h3><%=@user.username%>'s Profile</h3></center>
+<center><h3><%=@user.username%>'s profile</h3></center>
 
 <p>user id: <%=@user.id%></p>
 <p>password digest: <%=@user.password_digest%></p>
 <p>wins: <%=@user.wins%></p>
 <p>losses: <%=@user.losses%></p>
 <p>session id: <%=@user.session_id%></p>
+<br><br>
 
-<% @match = @user.pending_match %>
-<% if @match.nil? %>
+<% if @matches.length <= 7  %>
   <% session[:user_id] = @user.id %>
   <a href='/new_game'>New Game</a>
-<% else %>
+  <br><br>
+<% end %>
+
+<% @matches.each do |match|%>
   <% session[:user_id] = @user.id %>
-  <% session[:match_id] = @match.match_id %>
-  <a href='/continue_game'>Continue Game</a>
+  <% session[:match_id] = match["id"].to_i %>
+  <% opponent_id = match["user1_id"].to_i %>
+  <% if session[:user_id] == match["user1_id"].to_i %>
+    <% opponent_id = match["user2_id"].to_i %>
+  <% end %>
+  <a href='/continue_game' value="testing">Continue Game with <%=opponent_id%> (<%=session[:match_id]%>)</a><br><br>
+  <!-- HOW TO PASS SESSION ID WHEN INDIVIDUAL LINK IS CLICKED -->
 <% end %>

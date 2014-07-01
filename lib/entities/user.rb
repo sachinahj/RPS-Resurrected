@@ -59,6 +59,12 @@ module RPS
       return match
     end
 
+    def pending_matches
+      match_info = RPS.orm.get_match_info_by_user_id(@id)
+      return nil if match_info == nil
+      return match_info
+    end
+
     def self.get_user_object_by_username(username)
       params = RPS.orm.get_user_info_by_username(username)
       return nil if params.empty?

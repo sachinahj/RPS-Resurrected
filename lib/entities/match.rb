@@ -114,14 +114,23 @@ module RPS
       games_hash += @game_history_hash.split(":")
 
       history = Hash.new(){nil}
+      convert = {
+        "r" => "rock",
+        "p" => "paper",
+        "s" => "scissors",
+        "t" => "--><--",
+        "1" => "<---",
+        "2" => "--->"
+      }
 
       games_hash.each_with_index do |game_hash, index|
         game_number = "game" + (index+1).to_s
         history[game_number.to_sym] = {}
         turn_hash = game_hash.split("*")
-        history[game_number.to_sym][:user1_move] = turn_hash[0][1].to_s
-        history[game_number.to_sym][:user2_move] = turn_hash[1][1].to_s
-        history[game_number.to_sym][:winner] = turn_hash[2][1].to_s
+
+        history[game_number.to_sym][:user1_move] = convert[(turn_hash[0][1].to_s)]
+        history[game_number.to_sym][:user2_move] = convert[(turn_hash[1][1].to_s)]
+        history[game_number.to_sym][:winner] = convert[turn_hash[2][1].to_s]
       end
       return history
     end  

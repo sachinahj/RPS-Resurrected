@@ -25,10 +25,9 @@ module RPS
         user.save!
         sesh_id = user.create_session
         user = user.save!
-
         return {
           :success? => true,
-          :error => :none,
+          :error => nil,
           :sesh_id => sesh_id,
           :user => user
         }
